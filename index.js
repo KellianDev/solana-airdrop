@@ -11,7 +11,7 @@ const json = JSON.parse(list);
 let logs = [];
 let err = [];
 
-const amount = parseInt(process.env.AMOUNT)
+const AMOUNT = parseFloat(process.env.AMOUNT)
 
 async function run(json) {
     const connection = new web3.Connection(process.env.RPC_URL);
@@ -42,7 +42,7 @@ async function run(json) {
         }else{
             i++;
             logs.push({wallet: wallet, signature: signature});
-            console.log(`Wallet: ${wallet} | Success. | ${((i/length)*100).toFixed(2)}% Completed.`);
+            console.log(`Signature: ${signature} | Success. | ${((i/length)*100).toFixed(2)}% Completed.`);
         }
     }
 }
