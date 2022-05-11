@@ -74,7 +74,7 @@ function setupSession(wallet_list, cache_list, amount) {
     if(!cache_list) {
         console.log(GREEN, `[LOG] No cache, starting new airdrop session.`);
         console.log(BLUE, `[LOG] Accounts to airdrop: ${BRIGHT}${wallet_list.length}${RESET}`);
-        console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${wallet_list.length*amount} ◎${RESET}`);
+        console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${wallet_list.length*amount} SOL${RESET}`);
         writeLogs([]);
         return wallet_list;
     }
@@ -82,14 +82,14 @@ function setupSession(wallet_list, cache_list, amount) {
     if(!cache_list.wallets.length) {
         console.log(GREEN, `[LOG] Empty cache, starting new airdrop session.`);
         console.log(BLUE, `[LOG] Accounts to airdrop: ${BRIGHT}${wallet_list.length}${RESET}`);
-        console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${wallet_list.length*amount} ◎${RESET}`);
+        console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${wallet_list.length*amount} SOL${RESET}`);
         writeLogs([]);
         return wallet_list;
     }
 
     console.log(GREEN, `[LOG] Found a cache, resuming airdrop session.`);
     console.log(BLUE, `[LOG] Accounts to airdrop: ${BRIGHT}${cache_list.wallets.length}${RESET}`);
-    console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${cache_list.wallets.length*cache_list.amount} ◎${RESET}`);
+    console.log(BLUE, `[LOG] Total amount to airdrop: ${BRIGHT}${cache_list.wallets.length*cache_list.amount} SOL${RESET}`);
 
     return cache_list.wallets;
 }
@@ -171,11 +171,11 @@ async function beginAirdropSession() {
     airdrop_list = setupSession(wallet_list, cache_list, amount);
     
     const balance = await connection.getBalance(keypair.publicKey);
-    console.log(BLUE, `[LOG] Current balance: ${BRIGHT}${(balance/web3.LAMPORTS_PER_SOL).toFixed(3)} ◎${RESET}`);
+    console.log(BLUE, `[LOG] Current balance: ${BRIGHT}${(balance/web3.LAMPORTS_PER_SOL).toFixed(3)} SOL${RESET}`);
 
     if(balance/web3.LAMPORTS_PER_SOL-amount*airdrop_list.length <= 0) return console.log(RED, `[ERR] Balance too low.`);
 
-    console.log(BLUE, `[LOG] Balance after airdrop: ${BRIGHT}${(balance/web3.LAMPORTS_PER_SOL-amount*airdrop_list.length).toFixed(3)} ◎${RESET}`);
+    console.log(BLUE, `[LOG] Balance after airdrop: ${BRIGHT}${(balance/web3.LAMPORTS_PER_SOL-amount*airdrop_list.length).toFixed(3)} SOL${RESET}`);
 
     const response = await prompts({
         type: `confirm`,
