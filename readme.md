@@ -15,7 +15,7 @@ npm install
 
 You can then modify the configuration in the ```.env``` file:<br>
 `SECRET_KEY`: This is the secret key of the account that will run the airdrop<br>
-`RPC_URL`: This is RPC connection that will be used to run transactions<br>
+`RPC_URL`: This is the RPC connection that will be used to run transactions<br>
 `ACCOUNT_LIST`: This is the path to the list of account that you are airdropping (.json)<br>
 `AMOUNT`: This is the amount (in ◎) each account will be airdropped.<br>
 
