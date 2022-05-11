@@ -28,4 +28,4 @@ npm run airdrop
 
 ## Support me
 
-Hope you will have a great time airdropping! If you're willing to support me, here my addy! KELLMni8U7HoUK6pKqCcKDJDxDsUuhEMqdUcgyLFHRk
+Hope you will have a great time airdropping! If you're willing to support me, here's my addy! KELLMni8U7HoUK6pKqCcKDJDxDsUuhEMqdUcgyLFHRk
