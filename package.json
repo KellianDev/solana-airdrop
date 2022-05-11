@@ -1,6 +1,7 @@
 {
   "name": "solana-airdrop",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,5 +18,20 @@
     "dotenv": "^16.0.1",
     "prompts": "^2.4.2",
     "typescript": "^4.6.4"
+=======
+  "description": "A simple script that can be used to airdrop a specific amount of sol to a list of solana accounts.",
+  "main": "index.js",
+  "scripts": {
+    "airdrop": "node ."
+  },
+  "keywords": [],
+  "author": "KellianDev",
+  "license": "ISC",
+  "dependencies": {
+    "@solana/web3.js": "^1.41.4",
+    "dotenv": "^16.0.1",
+    "fs": "^0.0.1-security",
+    "prompts": "^2.4.2"
+>>>>>>> 2dfad03f9815da93d1ef7e19c2874f19256f15e7
   }
 }
