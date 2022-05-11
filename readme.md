@@ -30,6 +30,10 @@ After configuring your airdrop session, just run:
 npm run airdrop
 ```
 
+### 4. More
+
+When transactions fail or script is stopped in the middle of an airdrop session, the remaining addresses are saved in the ```cache.json``` file. That means you can rerun the script and it will detect that the airdrop is not complete and resume the previous session.
+
 ## Support me
 
-Hope you will have a great time airdropping! If you're willing to support me, here my addy! KELLMni8U7HoUK6pKqCcKDJDxDsUuhEMqdUcgyLFHRk
+Hope you will have a great time airdropping! If you're willing to support me, here's my addy! KELLMni8U7HoUK6pKqCcKDJDxDsUuhEMqdUcgyLFHRk
