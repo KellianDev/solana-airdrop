@@ -31,7 +31,7 @@ export class Environment {
 
         try{
             this.connection = new Connection(process.env.RPC_URL!, {
-                confirmTransactionInitialTimeout: 120000,
+                confirmTransactionInitialTimeout: 500000,
             });
             await this.connection.getLatestBlockhash();
         }catch(err){
