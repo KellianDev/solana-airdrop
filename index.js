@@ -108,6 +108,9 @@ function deleteCache() {
 }
 
 async function airdrop(connection, keypair, wallet, amount) {
+    
+    let signature;
+    
     try {
         const transaction = new web3.Transaction();
         transaction.feePayer = keypair.publicKey;
@@ -122,13 +125,12 @@ async function airdrop(connection, keypair, wallet, amount) {
             transaction,
             [keypair]
         );
-
-        if(!signature) return {error: `[ERR] Tx failed.`};
-
-        return {signature: signature};
     }catch(err){
         return {error: `[ERR] Tx failed.`};
     }
+    
+    if(!signature) return {error: `[ERR] Tx failed.`};
+    return {signature: signature};
 }
 
 async function startAirdrops(connection, keypair, airdrop_list, amount) {
