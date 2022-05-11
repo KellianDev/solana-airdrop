@@ -1,0 +1,21 @@
+{
+  "name": "solana-airdrop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "airdrop": "node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@solana/web3.js": "^1.41.4",
+    "@types/prompts": "^2.0.14",
+    "bs58": "^5.0.0",
+    "dotenv": "^16.0.1",
+    "prompts": "^2.4.2",
+    "typescript": "^4.6.4"
+  }
+}
