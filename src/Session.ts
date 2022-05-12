@@ -1,11 +1,12 @@
 import { Environment } from "./Environment";
 import fs from "fs";
 import { COLORS, STYLES } from "./utils";
-import { LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction, TransactionResponse } from "@solana/web3.js";
 
 export type CacheData = {
     totalAmountLeft: number,
     accounts: {pubkey: string, amountLeft: number}[];
+    unsureTransactions: {pubkey: string, signature: string}[];
 }
 
 export class Cache {
@@ -34,7 +35,8 @@ export class Cache {
 
         let data: CacheData = {
             totalAmountLeft: 0,
-            accounts: []
+            accounts: [],
+            unsureTransactions: []
         };
 
         (environment.list as Array<string>).forEach(pubkey => {
@@ -72,6 +74,10 @@ export class Cache {
         return total;
     }
 
+    addUnsureTx(pubkey: string, signature: string) {
+        this.data!.unsureTransactions.push({pubkey: pubkey, signature: signature});
+    }
+
     save(): boolean {
         try{
             fs.writeFileSync('./cache.json', JSON.stringify(this.data));
@@ -80,6 +86,10 @@ export class Cache {
         }
 
         return true;
+    }
+
+    unlink() {
+        fs.unlinkSync('./cache.json');
     }
 }
 
@@ -93,6 +103,28 @@ export class Session {
 
         this.cache = new Cache(environment);
         
+    }
+
+    async checkUnsureTransactions() {
+        for(let i = 0 ; i < this.cache.data!.unsureTransactions.length ; i++) {
+
+            const unsureTx = this.cache.data!.unsureTransactions[i];
+
+            const transaction = await this.environment.connection!.getTransaction(unsureTx.signature);
+            console.log(`${COLORS.YELLOW}[LOG] Checking signature ${unsureTx.signature} to ${unsureTx.pubkey}`);
+
+            if(!transaction) {
+                console.log(`${COLORS.RED}[ERR] Tx has failed.`)
+            }
+            else if(transaction!.meta!.logMessages?.indexOf('Program 11111111111111111111111111111111 success') == 1) {
+                this.cache.airdropProcessed(unsureTx.pubkey);
+                console.log(`${COLORS.BLUE}[LOG] Tx succeeded. ${STYLES.BOLD}${unsureTx.signature}${STYLES.RESET}`);
+                console.log(`${COLORS.BLUE}[LOG] Recipient pubkey. ${STYLES.BOLD}${unsureTx.pubkey}${STYLES.RESET}`);
+                console.log(`${COLORS.GREEN}${STYLES.BOLD}[${((this.cache.getAirdropsDone()/this.cache.data!.accounts.length)*100).toFixed(2)}%]${STYLES.RESET}`);
+            }
+        }
+
+        this.cache.data!.unsureTransactions = [];
     }
 
     async airdrop(pubkey: string, amount: number) {
@@ -113,11 +145,26 @@ export class Session {
     
             return {signature: signature};
         }catch(err){
-            return {error: `[ERR] Tx failed. ${err}`};
+            try {
+                const sig = ((err as Error).toString().split('Check signature ')[1]).split(' using')[0];
+                this.cache.addUnsureTx(pubkey, sig);
+                
+            }catch(e){
+                return {error: `[ERR] Tx has failed.`};
+            }
+
+            return {error: `[ERR] Tx might have failed, it will be checked later...`};
         }
     }
 
     async start() {
+        
+        
+        if(this.cache.data!.unsureTransactions.length) {
+            console.log(`${COLORS.YELLOW}[LOG] Checking unsure transactions...`);
+            await this.checkUnsureTransactions();
+        } 
+        
         this.cache.save();
 
         for(const account of this.cache.data!.accounts) {
@@ -125,8 +172,8 @@ export class Session {
                 const {signature, error} = await this.airdrop(account.pubkey, account.amountLeft);
 
                 if(!error) {
-                    console.log(`${COLORS.BLUE}[LOG] Tx succeeded. ${signature}`);
-                    console.log(`${COLORS.BLUE}[LOG] Recipient pubkey. ${account.pubkey}`);
+                    console.log(`${COLORS.BLUE}[LOG] Tx succeeded. ${STYLES.BOLD}${signature}${STYLES.RESET}`);
+                    console.log(`${COLORS.BLUE}[LOG] Recipient pubkey. ${STYLES.BOLD}${account.pubkey}${STYLES.RESET}`);
                     console.log(`${COLORS.BLUE}[LOG] Amount received. ${STYLES.BOLD}${account.amountLeft} SOL${STYLES.RESET}`);
                     this.cache.airdropProcessed(account.pubkey);
                     console.log(`${COLORS.GREEN}${STYLES.BOLD}[${((this.cache.getAirdropsDone()/this.cache.data!.accounts.length)*100).toFixed(2)}%]${STYLES.RESET}`);
@@ -135,6 +182,26 @@ export class Session {
                 }
     
                 this.cache.save();
+            }
+        }
+
+        console.log(`${COLORS.YELLOW}[LOG] Checking unsure transactions...`);
+        await new Promise(r => setTimeout(r, 30000));
+
+
+
+        if(this.cache.getAirdropsLeft() == 0) {
+            this.cache.unlink();
+            console.log(`${COLORS.GREEN}${STYLES.BOLD}[LOG] Airdrop session complete.${STYLES.RESET}`);
+        }else{
+            await this.checkUnsureTransactions();
+            this.cache.save();
+
+            if(this.cache.getAirdropsLeft() == 0) {
+                this.cache.unlink();
+                console.log(`${COLORS.GREEN}${STYLES.BOLD}[LOG] Airdrop session complete.${STYLES.RESET}`);
+            }else{
+                console.log(`${COLORS.RED}[LOG] Only ${this.cache.getAirdropsDone()} of ${this.cache.data?.accounts.length} transactions have been confirmed. Rerun 'npm run airdrop' to complete the session.`);
             }
         }
     }
