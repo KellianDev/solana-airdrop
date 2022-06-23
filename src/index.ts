@@ -31,6 +31,6 @@ async function airdrop() {
 }
 
 airdrop().then(()=>{
-    console.log(`${COLORS.MAGENTA}${STYLES.BOLD}[KellianDev] Hope you had a great time airdropping!${COLORS.WHITE}${STYLES.RESET}');
+    console.log(`${COLORS.MAGENTA}${STYLES.BOLD}[KellianDev] Hope you had a great time airdropping!${COLORS.WHITE}${STYLES.RESET}`);
     process.exit();
 });
